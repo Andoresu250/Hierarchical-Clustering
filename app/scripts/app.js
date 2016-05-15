@@ -16,7 +16,9 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ngMap'
+    'ngMap',
+    'ui.bootstrap',
+    'bootstrap.fileField'
   ])
   .config(function ($routeProvider) {
     $routeProvider
