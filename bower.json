@@ -12,7 +12,8 @@
     "angular-touch": "^1.4.0",
     "ngmap": "^1.17.3",
     "angular-bootstrap": "^1.3.2",
-    "angular-bootstrap-file-field": "^0.1.3"
+    "angular-bootstrap-file-field": "^0.1.3",
+    "angular-google-distance": "*"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

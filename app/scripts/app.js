@@ -18,7 +18,7 @@ angular
     'ngTouch',
     'ngMap',
     'ui.bootstrap',
-    'bootstrap.fileField'
+    'bootstrap.fileField'    
   ])
   .config(function ($routeProvider) {
     $routeProvider
