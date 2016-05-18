@@ -19,8 +19,8 @@ angular.module('clusteringApp')
 			}
 
 			$scope.cities = cities;
-											
-			if($scope.cities.length > 14){
+			if(false){								
+			//if($scope.cities.length > 14){
 				//Message
 				$scope.cities = [];
 				console.log("Muchas ciudades");
@@ -74,6 +74,11 @@ angular.module('clusteringApp')
 			}
 		}
 
+		function sleepFor( sleepDuration ){
+		    var now = new Date().getTime();
+		    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
+		}
+
 		function getDistance(origin, destination) {				
 			
 			var geocoder = new google.maps.Geocoder;
@@ -88,7 +93,12 @@ angular.module('clusteringApp')
 				avoidTolls: false
 			}, function(response, status) {
 				if (status !== google.maps.DistanceMatrixStatus.OK) {
-			  		alert('Error was: ' + status);
+			  		console.log('Error was: ' + status);
+			  		if(status === "OVER_QUERY_LIMIT"){
+			  			console.log("Estoy durmiendo por que me pase");
+	       		    	sleepFor(5*1000); 
+			  		}
+
 				} else {
 			  		var originList = response.originAddresses;
 			  		var destinationList = response.destinationAddresses;			  			  
@@ -98,7 +108,11 @@ angular.module('clusteringApp')
 			      			if (status === google.maps.GeocoderStatus.OK) {			        
 			        
 			       		    } else {
-			        			/*console.log('Geocode was not successful due to: ' + status);*/
+			       		    	console.log('Error was: ' + status);
+						  		if(status === "OVER_QUERY_LIMIT"){
+						  			console.log("Estoy durmiendo por que me pase");
+				       		    	sleepFor(5*1000); 
+						  		}			        			
 			      			}
 			    		};
 			  		};				  		  		
