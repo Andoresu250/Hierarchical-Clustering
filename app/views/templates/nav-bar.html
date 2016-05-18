@@ -15,13 +15,15 @@
         <li>
           <p class="navbar-btn">
             <label class="btn btn-default" for="my-file-selector">
-                <input file-reader="fileContent" ng-model="fileContent" id="my-file-selector" type="file" accept=".csv" style="display:none;">
+                <input file-reader="fileContent" ng-model="fileContent" id="my-file-selector" type="file" accept=".csv , .txt" style="display:none;">
                 <span class="glyphicon glyphicon-folder-open"></span> Seleccionar Archivo
             </label>
           </p>
-        </li>     
+        </li>             
         <li>
-          <a href="" ng-click="showCities()">show</a>
+          <p class="navbar-btn">
+            <a href="" class="btn btn-success" ng-click="showCities()"> <span class="glyphicon glyphicon-play"></span> Ejecutar</a>
+          </p>
         </li>           
       </ul>
     </div>

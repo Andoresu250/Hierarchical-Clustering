@@ -1,4 +1,9 @@
 <div map-lazy-load="https://maps.google.com/maps/api/js"
-  map-lazy-load-params="{{googleMapsUrl}}">
-  <ng-map center="4.7,-74.2" zoom="6" default-style="false"></ng-map>
+  map-lazy-load-params="{{googleMapsUrl}}">  
+  <ng-map center="4.7,-74.2" zoom="6" default-style="false">    
+  		<div ng-controller="FileCtrl" ng-repeat="city in cities">
+  			<marker position="{{city}}" optimized="true">
+    		</marker>
+  		</div>  	
+  </ng-map>
 </div>

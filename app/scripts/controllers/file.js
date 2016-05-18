@@ -1,46 +1,44 @@
 'use strict';
 
 angular.module('clusteringApp')
-	.controller('FileCtrl', function ($scope) {		
+	.controller('FileCtrl', function ($scope, $uibModal) {	
 
+		$scope.cities = []; 
+		
 		$scope.showCities = function () {
-			var cities = $scope.fileContent.split(/\r\n|\n/);
+			var cities = [];
+			cities = $scope.fileContent.split(/\r\n|\n/);			
 			if(cities[cities.length-1] === ""){
 				cities.splice(-1,1);
-			}					
-			var matrix = createMatrix(cities.length);
-			var n = matrix.length;
-			var m = matrix[0].length;
-
-			var origins = [];
-			var destinations = [];
-			for (var i = 0; i < 10; i++) {
-				origins.push(cities[i]);
-				destinations.push(cities[i]);
-			}			
-			console.log("Primer lote");
-			getDistance(origins, destinations);	
-			sleepFor(60*1000);		
-			origins = [];
-			destinations = [];
-			for (var i = 10; i < 20; i++) {
-				origins.push(cities[i]);
-				destinations.push(cities[i]);
-			}			
-			console.log("Segundo lote");			
-			getDistance(origins, destinations);
-			/*for (var i = 0; i < n; i++) {
-				for (var j = i + 1; j < m; j++) {
-					matrix[i][j] = getDistance(cities[i], cities[j]);
+			}		
+			for (var i = 0; i < cities.length; i++) {
+				if(cities[i].indexOf("�") > -1){
+					cities[i] = cities[i].replaceAt(cities[i].indexOf("�"), "ñ");
 				}
+				console.log(cities[i]);
 			}
-			printMatrix(matrix);*/
-		};	
 
-		function sleepFor( sleepDuration ){
-		    var now = new Date().getTime();
-		    while(new Date().getTime() < now + sleepDuration){ /* do nothing */ } 
-		}	
+			$scope.cities = cities;
+											
+			if($scope.cities.length > 14){
+				//Message
+				$scope.cities = [];
+				console.log("Muchas ciudades");
+				openModal();
+
+			}else{
+				$scope.matrix = createMatrix($scope.cities.length);
+				$scope.n = $scope.matrix.length;
+				$scope.m = $scope.matrix[0].length;
+				for (var i = 0; i < $scope.n; i++) {											
+					for (var j = i + 1; j < $scope.m; j++) {
+						var origin = {"name": $scope.cities[i],"i":i, "j":j};
+						var destination = {"name": $scope.cities[j],"i":i, "j":j};
+						getDistance(origin, destination);
+					}
+				}			
+			}			
+		};	
 
 		function createMatrix(n){
 			var matrix = [];
@@ -76,18 +74,14 @@ angular.module('clusteringApp')
 			}
 		}
 
-		function getCity(row) {
-			return row.split(',')[0];
-		}
-
-		function getDistance(origins, destinations) {				
+		function getDistance(origin, destination) {				
 			
 			var geocoder = new google.maps.Geocoder;
 			var service = new google.maps.DistanceMatrixService;
 
 			service.getDistanceMatrix({
-				origins: origins,
-				destinations: destinations,
+				origins: [origin.name],
+				destinations: [destination.name],
 				travelMode: google.maps.TravelMode.DRIVING,
 				unitSystem: google.maps.UnitSystem.METRIC,
 				avoidHighways: false,
@@ -104,28 +98,56 @@ angular.module('clusteringApp')
 			      			if (status === google.maps.GeocoderStatus.OK) {			        
 			        
 			       		    } else {
-			        			alert('Geocode was not successful due to: ' + status);
+			        			/*console.log('Geocode was not successful due to: ' + status);*/
 			      			}
 			    		};
-			  		};
-			  		console.log(response);
+			  		};				  		  		
 			  		for (var i = 0; i < originList.length; i++) {
 			    		var results = response.rows[i].elements;			    		
 			    		geocoder.geocode({'address': originList[i]},
 			        	showGeocodedAddressOnMap(false));
-
 			    		for (var j = 0; j < results.length; j++) {
 				      		geocoder.geocode({'address': destinationList[j]},
-				        	showGeocodedAddressOnMap(true));				        	
-				        	/*if(results[j].status === "ZERO_RESULTS"){				        		
-				        		console.log("no se puede calcular distancia");
+				        	showGeocodedAddressOnMap(true));					        					        					        	
+				        	if(results[j].status === "ZERO_RESULTS"){				        						        		
+				        		$scope.matrix[origin.i][origin.j] = undefined;
+				        		$scope.matrix[origin.j][origin.i] = undefined;
 				        	}else{
-				        		console.log(results[j]);				        		
-				        	}*/				    				      
+				        		$scope.matrix[origin.i][origin.j] = results[j].distance.value;				        				        		
+				        		$scope.matrix[origin.j][origin.i] = results[j].distance.value;				        				        		
+				        	}
 			    		}
-			  		}
-			  		sleepFor(60*1000);
+			  		}		
+			  		if((origin.i === $scope.matrix.length - 2) && (origin.j === $scope.matrix.length - 1)){
+		  				printMatrix($scope.matrix);
+			  		}	  		
 				}
 			});
+		}	
+
+		String.prototype.replaceAt=function(index, character) {
+		    return this.substr(0, index) + character + this.substr(index+character.length);
 		}
+
+		function openModal(size) {
+
+			var modalInstance = $uibModal.open({
+				animation: $scope.animationsEnabled,
+				templateUrl: 'views/templates/myModalContent.html',
+				controller: 'ModalInstanceCtrl',
+				size: size
+			});
+
+			modalInstance.result.then(function (selectedItem) {
+				$scope.selected = selectedItem;
+			}, function () {
+				
+			});
+		}
+
+		$scope.toggleAnimation = function () {
+			$scope.animationsEnabled = !$scope.animationsEnabled;
+		};	
+		
+		
 	});
